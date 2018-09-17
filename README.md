@@ -1,21 +1,11 @@
-# huarun
+# vue2 + ivew3 + vuex + jsplumb 的测试
 
-> 医疗信息化工作流开发平台
+> vue2 + ivew3 + vuex + jsplumb
 
 ## Build Setup
 
 ``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
+以数据流为核心，尽可能减少对dom的直接操作为原则
+测试jsplumb 社区版的实践
 ```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
