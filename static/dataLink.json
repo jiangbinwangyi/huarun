@@ -1,0 +1,89 @@
+{
+	"基础信息": [
+		{
+			"name": "就诊卡号",
+			"show": true
+		},{
+			"name": "医疗证号",
+			"show": false
+		},{
+			"name": "医保卡号",
+			"show": true
+		},{
+			"name": "门诊病历",
+			"show": false
+		},{
+			"name": "姓名标识",
+			"show": true
+		},{
+			"name": "患者性别",
+			"show": true
+		},{
+			"name": "出生日期",
+			"show": true
+		},{
+			"name": "手机号",
+			"show": false
+		},{
+			"name": "身份证号",
+			"show": false
+		},{
+			"name": "患者类型",
+			"show": false
+		},{
+			"name": "明细类型",
+			"show": false
+		},{
+			"name": "家庭住址",
+			"show": false
+		}
+	],
+	"诊疗信息": [
+		{
+			"name": "病历资料",
+			"show": true
+		},{
+			"name": "住宿",
+			"show": false
+		},{
+			"name": "现病史",
+			"show": false
+		},{
+			"name": "既往史",
+			"show": false
+		}
+	],
+	"医生信息": [
+		{
+			"name": "科室",
+			"show": true
+		},{
+			"name": "姓名",
+			"show": false
+		},{
+			"name": "职称",
+			"show": false
+		},{
+			"name": "诊疗时间",
+			"show": false
+		}
+	],
+	"费用信息": [
+		{
+			"name": "项目名称",
+			"show": false
+		},{
+			"name": "规格",
+			"show": false
+		},{
+			"name": "价格",
+			"show": false
+		},{
+			"name": "医保费用类型",
+			"show": false
+		},{
+			"name": "数量",
+			"show": false
+		}
+	]
+}

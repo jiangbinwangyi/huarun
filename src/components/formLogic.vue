@@ -1,0 +1,24 @@
+<template>
+	<h1>{{msg}}</h1>
+</template>
+
+<script>
+	import Sortable from 'sortablejs';
+	export default {
+		data() {
+			return {
+				msg: "formLogic"
+			}
+		},
+		mounted() {
+			
+		},
+		methods: {
+			
+		}
+	}
+</script>
+
+<style lang="less">
+	
+</style>
