@@ -37,7 +37,7 @@ exports.cssLoaders = function (options) {
       loaders.push({
         loader: loader + '-loader',
         options: Object.assign({}, loaderOptions, {
-          sourceMap: options.sourceMap
+          sourceMap: options.sourceMap,
         })
       })
     }
@@ -47,7 +47,8 @@ exports.cssLoaders = function (options) {
     if (options.extract) {
       return ExtractTextPlugin.extract({
         use: loaders,
-        fallback: 'vue-style-loader'
+        fallback: 'vue-style-loader',
+        publicPath: '../../'
       })
     } else {
       return ['vue-style-loader'].concat(loaders)

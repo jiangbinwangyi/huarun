@@ -1,16 +1,19 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import main from '@/components/main'
 
+import store from '@/store'
+
+import main from '@/components/main'
 import workFlow from '@/components/workFlow.vue';
-import dataLink from '@/components/dataLink.vue';
-import formCreate from '@/components/formCreate.vue';
-import formLogic from '@/components/formLogic.vue';
+import workNode from '@/components/workNode.vue';
+import dataLink from '@/components/workNode/dataLink.vue';
+import formCreate from '@/components/workNode/formCreate/formCreate.vue';
+import formLogic from '@/components/workNode/formLogic/formLogic.vue';
 import viewPage from '@/components/viewPage.vue';
 
 Vue.use(Router)
 export const router = new Router({
-	//	mode: 'history',
+	//		mode: 'history',
 	routes: [{
 		path: '/',
 		name: 'main',
@@ -26,27 +29,35 @@ export const router = new Router({
 			},
 			component: workFlow
 		}, {
-			path: '/workNode/dataLink',
-			name: 'dataLink',
+			path: '/workNode',
+			name: 'workNode',
 			meta: {
-				title: "编辑关联数据"
+				title: "编辑工作节点"
 			},
-			component: dataLink
-		}, {
-			path: '/workNode/formCreate',
-			name: 'formCreate',
-			meta: {
-				title: "编辑表单内容"
-			},
-			component: formCreate
-		}, {
-			path: '/workNode/formLogic',
-			name: 'formLogic',
-			meta: {
-				title: "编辑表单逻辑"
-			},
-			component: formLogic
+			component: workNode,
+			children: [{
+				path: '/workNode/dataLink',
+				name: 'dataLink',
+				meta: {
+					title: "编辑关联数据"
+				},
+				component: dataLink
+			}, {
+				path: '/workNode/formCreate',
+				name: 'formCreate',
+				meta: {
+					title: "编辑表单内容"
+				},
+				component: formCreate
+			}, {
+				path: '/workNode/formLogic',
+				name: 'formLogic',
+				meta: {
+					title: "编辑表单逻辑"
+				},
+				component: formLogic
 
+			}]
 		}, {
 			path: '/viewPage',
 			name: 'viewPage',
@@ -60,7 +71,7 @@ export const router = new Router({
 
 router.beforeEach((to, from, next) => {
 	let title = to.meta.title;
-	let iTitle = this.a.options.routes[0].meta.title;
+	let iTitle = "医疗信息化工作流开发平台";
 	if(title) {
 		iTitle = title + '-' + iTitle;
 	}

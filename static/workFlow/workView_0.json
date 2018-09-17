@@ -1,0 +1,40 @@
+{
+	"nodes": [{
+		"id": "workView00",
+		"name": "流程开始",
+		"icon": "ios-play",
+		"type": "通用节点",
+		"loca": {
+			"x": 100,
+			"y": 100
+		}
+	}, {
+		"id": "workView01",
+		"name": "手术治疗",
+		"icon": "ios-cut",
+		"type": "工作流节点",
+		"loca": {
+			"x": 100,
+			"y": 200
+		}
+	}, {
+		"id": "workView02",
+		"name": "流程结束",
+		"icon": "md-radio-button-off",
+		"type": "通用节点",
+		"loca": {
+			"x": 400,
+			"y": 100
+		}
+	}],
+	"connections": [
+		{
+			"sourceId": "workView00",
+			"targetId": "workView01"
+		},
+		{
+			"sourceId": "workView01",
+			"targetId": "workView02"
+		}
+	]
+}

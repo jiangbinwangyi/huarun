@@ -2,87 +2,112 @@
 	"基础信息": [
 		{
 			"name": "就诊卡号",
-			"show": true
+			"type": "input",
+			"show": false
 		},{
 			"name": "医疗证号",
+			"type": "input",
 			"show": false
 		},{
 			"name": "医保卡号",
+			"type": "input",
 			"show": true
 		},{
 			"name": "门诊病历",
+			"type": "input",
 			"show": false
 		},{
 			"name": "姓名标识",
+			"type": "input",
 			"show": true
 		},{
 			"name": "患者性别",
+			"type": "radio",
 			"show": true
 		},{
 			"name": "出生日期",
+			"type": "date",
 			"show": true
 		},{
 			"name": "手机号",
+			"type": "input",
 			"show": false
 		},{
 			"name": "身份证号",
+			"type": "input",
 			"show": false
 		},{
 			"name": "患者类型",
+			"type": "select",
 			"show": false
 		},{
 			"name": "明细类型",
+			"type": "select",
 			"show": false
 		},{
 			"name": "家庭住址",
+			"type": "input",
 			"show": false
 		}
 	],
 	"诊疗信息": [
 		{
 			"name": "病历资料",
-			"show": true
+			"type": "input",
+			"show": false
 		},{
 			"name": "住宿",
+			"type": "input",
 			"show": false
 		},{
 			"name": "现病史",
+			"type": "input",
 			"show": false
 		},{
 			"name": "既往史",
+			"type": "input",
 			"show": false
 		}
 	],
 	"医生信息": [
 		{
 			"name": "科室",
-			"show": true
+			"type": "select",
+			"show": false
 		},{
 			"name": "姓名",
+			"type": "input",
 			"show": false
 		},{
 			"name": "职称",
+			"type": "input",
 			"show": false
 		},{
 			"name": "诊疗时间",
+			"type": "date",
 			"show": false
 		}
 	],
 	"费用信息": [
 		{
 			"name": "项目名称",
-			"show": false
+			"type": "input",
+			"show": true
 		},{
 			"name": "规格",
+			"type": "input",
 			"show": false
 		},{
 			"name": "价格",
-			"show": false
+			"type": "money",
+			"show": true
 		},{
-			"name": "医保费用类型",
-			"show": false
+			"name": "医保类型",
+			"type": "select",
+			"show": true
 		},{
 			"name": "数量",
+			"type": "input",
 			"show": false
 		}
 	]

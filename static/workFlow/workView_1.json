@@ -1,0 +1,22 @@
+{
+	"nodes": [{
+		"id": "10",
+		"name": "流程开始",
+		"icon": "ios-play",
+		"type": "通用节点",
+		"loca": {
+			"x": 100,
+			"y": 100
+		}
+	}, {
+		"id": "11",
+		"name": "门诊挂号",
+		"icon": "ios-pricetag",
+		"type": "工作流节点",
+		"loca": {
+			"x": 100,
+			"y": 200
+		}
+	}],
+	"connections": []
+}

@@ -2,7 +2,7 @@
 	<div>
 		<div class="navicon-con">
 			<h1>
-    			<Icon type="md-desktop"></Icon>
+    			<img src="../../assets/logo.png"/>
 				{{myTitle}}
     		</h1>
 		</div>

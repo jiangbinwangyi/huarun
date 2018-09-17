@@ -1,6 +1,6 @@
 # huarun
 
-> A Vue.js project
+> 医疗信息化工作流开发平台
 
 ## Build Setup
 
