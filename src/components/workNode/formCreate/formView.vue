@@ -1,13 +1,13 @@
 <template>
-	<div class="pageViewBox" id="pageView">
-		<div v-for="(v,i) in pageView" class="pageViewItem" :class="v.line && 'line'">
+	<div id="pageView">
+		<div v-for="(v,i) in pageView" class="pageViewItem" :class="{'line':v.line,'cur':v.cur}">
 			<!--标题-->
 			<div class="pageViewMain" v-if="v.type=='title'">
 				<h1><Icon type="ios-bookmark" />{{v.name}}</h1>
 			</div>
 			<!--输入框-->
 			<div class="pageViewMain" v-if="v.type=='input'">
-				<FormItem :label="v.name" :required="v.required">
+				<FormItem :label="v.name" :required="v.required" :label-width="v.labelWidth">
 					<Input :placeholder="v.placeholder"></Input>
 				</FormItem>
 			</div>
@@ -72,22 +72,26 @@
 </template>
 
 <script>
+	import {mapStates,mapActions} from 'vuex';
 	export default {
 		name: 'formView',
 		data() {
 			return {};
 		},
-		mounted() {},
 		computed: {
 			pageView() {
 				return this.$store.state.formCreate.pageView
 			},
 		},
+		created(){
+			this.$store.dispatch('setLabel');
+		},
+		mounted() {},
 		beforeDestroy() {},
 		methods: {
 			//传递选中控件
 			changeAttr(index) {
-				this.$emit('cueLabelIndex', index)
+				this.$store.commit('curLabel',index)
 			},
 			//合并拆分组件
 			changeAttrLine(index) {
@@ -132,16 +136,16 @@
 					}
 				}
 				.pageViewOperate {
-					display: none;
+					display: block;
 					position: absolute;
 					top: 0;
 					left: 0;
 					width: 100%;
 					height: 100%;
-					border: dashed 1px #fff;
-					background: rgba(45, 140, 240, .1);
 					z-index: 9;
+					cursor: pointer;
 					.pageOperateMain {
+						opacity: 0;
 						position: absolute;
 						right: 6px;
 						top: 6px;
@@ -149,8 +153,15 @@
 						cursor: pointer;
 					}
 				}
-				&:hover .pageViewOperate {
-					display: block;
+				&:hover .pageViewOperate{
+					border: dashed 1px #ddd;
+				}
+				&.cur .pageViewOperate {
+					border: dashed 1px #fff;
+					background: rgba(45, 140, 240, .1);
+					.pageOperateMain {
+						opacity: 1;
+					}
 				}
 			}
 		}

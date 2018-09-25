@@ -1,57 +1,71 @@
 export default [{
+	id: 0,
 	name: '流程开始',
 	icon: 'ios-play',
 	type: '通用节点'
 }, {
+	id: 1,
 	name: '流程结束',
 	icon: 'md-radio-button-off',
 	type: '通用节点'
 }, {
+	id: 2,
 	name: '数据过滤',
 	icon: 'ios-funnel',
 	type: '通用节点'
 }, {
+	id: 3,
 	name: '门诊挂号',
 	icon: 'ios-pricetag',
 	type: '工作流节点'
 }, {
+	id: 4,
 	name: '门诊就诊',
 	icon: 'md-git-branch',
 	type: '工作流节点'
 }, {
+	id: 5,
 	name: '门诊缴费',
 	icon: 'ios-card',
 	type: '工作流节点'
 }, {
+	id: 6,
 	name: '辅助检验',
 	icon: 'ios-bookmarks',
 	type: '工作流节点'
 }, {
+	id: 7,
 	name: '手术治疗',
 	icon: 'ios-cut',
 	type: '工作流节点'
 }, {
+	id: 8,
 	name: '药房开药',
 	icon: 'ios-medkit',
 	type: '工作流节点'
 }, {
+	id: 9,
 	name: '住院登记',
 	icon: 'ios-create',
 	type: '工作流节点'
 }, {
+	id: 10,
 	name: '入院常规',
 	icon: 'ios-clipboard',
 	type: '工作流节点'
 }, {
+	id: 11,
 	name: '自定义节点',
 	icon: 'ios-add-circle',
 	type: '工作流节点'
 }, {
+	id: 12,
 	name: '流程分支',
 	icon: 'ios-git-network',
 	type: '通用节点'
 }, {
-	name: '流程分支',
+	id: 13,
+	name: '数据分组',
 	icon: 'ios-git-network',
 	type: '通用节点'
 }]

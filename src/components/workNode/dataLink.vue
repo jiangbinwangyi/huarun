@@ -7,7 +7,7 @@
 				<ul>
 					<li v-for="(cval,ckey) in val" :key="ckey">
 						{{cval.name}}
-						<i-switch v-model="cval.show" />
+						<i-switch :value="cval.show" @on-change="editData(cval.name)" />
 					</li>
 				</ul>
 			</Card>
@@ -18,15 +18,22 @@
 
 <script>
 	import axios from 'axios';
+	import { mapState, mapMutations  } from 'vuex';
 	export default {
 		data() {
-			return {
-				dataLink: {},
-				datas: [],
-			}
+			return {}
+		},
+		computed: mapState({
+			dataLink: state => state.dataLink.dataLink
+		}),
+		methods: mapMutations([
+			'editData'
+		]),
+		created() {
+			this.$store.dispatch('getAllData')
 		},
 		mounted() {
-			axios.get('./static/dataLink.json').then(response => {
+			/*axios.get('./static/dataLink.json').then(response => {
 				this.$nextTick(() => {
 					this.dataLink = response.data;
 					
@@ -57,18 +64,13 @@
 								}
 							}
 						}
-						this.$emit('dataLink',this.datas);
+						this.$store.commit('setLabel',this.datas);
 						next();
 					})
 				})
-			})
-			
+			})*/
 		},
-		methods: {
-
-		},
-		watch: {
-		}
+		watch: {}
 	}
 </script>
 

@@ -2,38 +2,38 @@
 	<Row style="height: 100%;" id="work-container">
 		<!--左侧工作流盒子-->
 		<Col span="4" class="leftMenu">
-		<!--利用refs直接处理工作流 workFlowLeft-->
-		<!--@flowChange监听工作流切换-->
-		<leftMenu ref="flowBox" @flowChange="flowChange($event)"></leftMenu>
+			<!--@flowChange监听工作流切换-->
+			<leftMenu @flowChange="emptyNode($event)"></leftMenu>
 		</Col>
 		<!--中间视图盒子-->
 		<Col span="16" class="centerView">
-		<h3>{{flowTitle}}</h3>
-		<div id="viewBox" class="viewBox">
-			<div v-for="(item, index) in workViewList.nodes" :key="index" :id="item.id" class="workItem" :data-index="index" :style="'left:'+item.loca.x+'px;top:'+item.loca.y+'px;'">
-				<div class="workItemMain" :data-type="item.type" @dblclick="toWorkNode($event)">
-					<Icon :type="item.icon"></Icon>
-					{{ item.name }}
-					<Icon type="md-close" class="draggable-delete"></Icon>
+			<h3>{{flowTitle}}</h3>
+			<div id="viewBox" class="viewBox">
+				<div v-for="(item, index) in nodeList.nodes" :key="index" :id="item.id" class="workItem" :data-index="index" :style="'left:'+item.loca.x+'px;top:'+item.loca.y+'px;'">
+					<div class="workItemMain" @dblclick="toWorkNode(item.type)">
+						<Icon :type="item.icon"></Icon>
+						<span v-text="item.name"></span>
+						<Icon type="md-create" class="nodeEdit" @click="nodeEdit(index)"></Icon>
+						<Icon type="md-close" class="draggable-delete"></Icon>
+					</div>
+					<div class="workItemArrow"></div>
 				</div>
-				<div class="workItemArrow"></div>
 			</div>
-		</div>
 		</Col>
 		<!--右侧工具盒子-->
 		<Col span="4" class="rightMenu">
-		<div class="toolBox">
-			<h3>工具箱</h3>
-			<div id="toolBox">
-				<template v-for="title in toolListTitle">
-					<div class="toolBoxTitle">{{title}}</div>
-					<div v-for="(item, index) in workTool" v-if="item.type==title" :key="index" class="workItem" :data-index="index">
-						<Icon :type="item.icon"></Icon>
-						{{ item.name }}
-					</div>
-				</template>
+			<div class="toolBox">
+				<h3>工具箱</h3>
+				<div id="toolBox">
+					<template v-for="title in toolListTitle">
+						<div class="toolBoxTitle">{{title}}</div>
+						<div v-for="(item, index) in workTool" v-if="item.type==title" :key="index" class="workItem" :data-index="index">
+							<Icon :type="item.icon"></Icon>
+							{{ item.name }}
+						</div>
+					</template>
+				</div>
 			</div>
-		</div>
 		</Col>
 	</Row>
 </template>
@@ -44,14 +44,12 @@
 	import axios from 'axios';
 	import 'jsplumb/css/jsplumbtoolkit-defaults.css';
 	import leftMenu from './workFlow/workFlowLeft.vue';
-	import flowNode from './workFlowNode.vue';
 	import workTool from './workFLow/workTool.js';
 
 	export default {
 		name: 'workFlow',
 		components: {
 			leftMenu,
-			flowNode
 		},
 		data() {
 			return {
@@ -61,11 +59,8 @@
 			};
 		},
 		computed: {
-			workViewList() {
-				return {
-					nodes: this.$store.state.workFlow.workView.nodes,
-					connections: this.$store.state.workFlow.workView.connections
-				}
+			nodeList() {
+				return this.$store.state.workFlow.nodeList
 			},
 			toolListTitle() {
 				let arr = [];
@@ -83,11 +78,23 @@
 				event.stopPropagation();
 			};
 		},
+		watch: {
+			nodeList: {
+				handler(n, o) {
+					this.$nextTick(() => {
+						if(n.nodes && n.nodes.length > 0) {
+							this.jspReady()
+						}
+					})
+				},
+//				deep: true   //如果深度监听，会重复装载jsp
+			}
+		},
 		methods: {
-			plumbReady() {
+			jspReady() {
 				jsPlumb.ready(() => {
 					let vm = this;
-					
+
 					//工具盒子，实现拖拽
 					let toolBox = document.querySelector('#toolBox');
 					Sortable.create(toolBox, {
@@ -102,28 +109,30 @@
 						fallbackClass: 'toolFallback',
 						chosenClass: 'toolChosen',
 						onRemove(event) {
-							//删除拖拽后复制的dom节点
-							event.item.parentNode.removeChild(event.item);
 							//新增节点
-							let nodes = vm.workViewList.nodes;
-							let id = jsPlumbUtil.uuid();;
-
-							let item = event.clone;
+							let id = jsPlumbUtil.uuid(); //生成随机ID
+							
+							let item = event.item;
+							
 							let loca = vm.getLocation(item); //获取坐标位置
-							for(let v of vm.workTool) {
-								if(item.innerHTML.indexOf(v.name) > -1) {
-									vm.$store.commit({
-										type: 'nodeNew',
-										tool: Object.assign({}, v),
-										loca,
-										id
-									})
-									break;
-								}
-							}
+							
+							let tool = vm.workTool.find((e,i)=>{
+								return item.dataset.index == i;
+							})
+							
+							item.parentNode.removeChild(item); //删除复制的dom节点
+							
+							vm.$store.commit({
+								type: 'nodeNew',
+								tool: Object.assign({},tool),
+								loca,
+								id
+							})
 
 							vm.$nextTick(() => {
-								vm.initNode(id);
+								vm.jspInitNode(id); //注册成jsp节点
+								
+								vm.nodeEdit(vm.nodeList.nodes.length-1); //编辑新节点
 							});
 						},
 					});
@@ -137,49 +146,16 @@
 							put: true
 						},
 						sort: false,
-						//forceFallback: true,
-						fallbackClass: 'itemFallback',
-						chosenClass: 'itemChosen',
 					});
 
-					// 删除连接线
-					//					instance.bind("click", function(c) {
-					//						instance.deleteConnection(c);
-					//					});
-
-					//					instance.bind("connection", function(info) {
-					//
-					//					});
-
 					//初始化
-					this.plumbBegin();
+					this.jspBegin();
 					jsPlumb.fire("jsPlumbDemoLoaded", this.jsp);
 				})
 			},
-			plumbEmpty(workView){
-				this.$store.commit({
-					type: 'setWork',
-					data: {
-						nodes: [],
-						connections: []
-					}
-				});
-				this.$nextTick(() => {
-					this.jsp.empty("viewBox");
-
-					this.$store.commit({
-						type: 'setWork',
-						data: workView
-					});
-
-					this.$nextTick(() => { //第二次用来做dom重新装载完成
-						this.plumbBegin();
-					})
-				})
-			},
-			plumbBegin() {
+			jspBegin() {
 				let vm = this;
-				
+
 				let instance = jsPlumb.getInstance({
 					Endpoint: [
 						"Blank",
@@ -222,20 +198,20 @@
 							return h('p', "确认是否删除该节点")
 						},
 						onOk: () => {
-							//instance.deleteConnectionsForElement(id);
-							//instance.deleteConnection(id);
-							//instance.deleteEveryConnection(id);
-							//instance.deleteEveryEndpoint(id);
-
 							vm.$store.commit({ //既要删除节点数据
 								type: 'nodeDel',
 								id
 							})
-
-							let workView = vm.workViewList;
-
-							vm.plumbEmpty(workView);
-
+							
+							//需要重新装载
+							let newNodeList = vm.nodeList;
+							vm.$nextTick(()=>{
+								vm.$store.commit('setNode',{});
+								vm.$nextTick(()=>{
+									vm.jsp.empty('viewBox');
+									vm.$store.commit('setNode',newNodeList);
+								})
+							})
 						}
 					})
 				})
@@ -244,7 +220,7 @@
 					//info.connection.getOverlay("label").setLabel(info.connection.id);
 					//判断是否已有该连接
 					let isSame = true;
-					vm.workViewList.connections.forEach(item => {
+					vm.nodeList.connections.forEach(item => {
 						if(
 							(item.targetId === info.targetId &&
 								item.sourceId === info.sourceId) ||
@@ -266,18 +242,25 @@
 					}
 					return isSame;
 				});
+				
+				// 删除连接线
+				//instance.bind("click", function(c) {
+					//instance.deleteConnection(c);
+				//});
 
-				this.workViewList.nodes.forEach(item => {
-					this.initNode(item.id);
+				//instance.bind("connection", function(info) {});
+				
+				this.nodeList.nodes.forEach(item => {
+					this.jspInitNode(item.id);
 				});
-				this.workViewList.connections.forEach(item => {
+				this.nodeList.connections.forEach(item => {
 					this.jsp.connect({
 						source: item.sourceId,
 						target: item.targetId
 					});
 				});
 			},
-			initNode(el) {
+			jspInitNode(el) {
 				let vm = this;
 				this.jsp.draggable(el, {
 					// containment: true,
@@ -302,10 +285,10 @@
 						})
 					}
 				});
-
+				
 				this.jsp.makeSource(el, {
 					filter: ".workItemArrow",
-					// anchor: "Continuous",
+					//anchor: "Continuous",
 					anchor: ["Perimeter", {
 						shape: "Rectangle"
 					}],
@@ -336,9 +319,9 @@
 
 				this.jsp.fire("jsPlumbDemoNodeAdded", el);
 			},
-			//工作流节点双击进入编辑页面
-			toWorkNode(e) { //不能双击图标
-				if(e.target.dataset.type == "工作流节点") {
+			//工作流节点双击进入编辑页面，进入前保存
+			toWorkNode(type) { //不能双击图标
+				if(type == "工作流节点") {
 					this.$router.push({
 						path: '/workNode/dataLink'
 					});
@@ -358,22 +341,35 @@
 					y: mouse.clientY - (top + viewBox.offsetTop) - item.clientHeight / 2
 				}
 			},
-			flowChange(op) {
-				//由于每一次都要做重新请求，不能保存工作流
-				axios.get('./static/workFlow/workView_' + op.id + '.json').then((res) => {
-					this.$nextTick(() => { //首次加载启动plumb
-						if(op.r){
-							this.$store.commit({
-								type: 'setWork',
-								data: res.data
-							})
-							this.plumbReady();
-						}else{ //切换工作流的话直接清空
-							this.plumbEmpty(res.data);
-						}
-					});
-				}).catch((e) => {
-					console.log(e);
+			//切换时，先清空工作流
+			emptyNode(id){
+				this.$store.commit('setNode',{});
+				this.$nextTick(()=>{
+					this.jsp.empty('viewBox');
+					this.$store.dispatch('setNode',id);
+				})
+			},
+			//编辑工作节点
+			nodeEdit(index){
+				let name = this.nodeList.nodes[index].name;
+				this.$Modal.confirm({
+					render: (h) => {
+						return h('Input', {
+							props: {
+								value: name,
+								autofocus: true,
+								placeholder: '请输入工作节点名字'
+							},
+							on: {
+								input: (val) => {
+									name = val;
+								}
+							}
+						})
+					},
+					onOk: () => {
+						this.$store.commit('nodeEdit',{index,attr:{name}});
+					}
 				})
 			}
 		}

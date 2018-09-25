@@ -8,19 +8,19 @@
 					<h3>{{title}}</h3>
 					<div class="pageToolItem" v-for="(v,i) in pageTool" v-if="v.group==title" :data-type="v.type">
 						<p>
-							<Icon :type="v.icon" />{{v.name}}</p>
+							<Icon :type="v.icon" />{{v.toolName}}</p>
 					</div>
 				</template>
 			</div>
 			</Col>
 			<!--视图盒子-->
-			<Col span="13">
-				<formView @cueLabelIndex="changeAttr($event)">
+			<Col span="13" class="pageViewBox">
+				<formView>
 				</formView>
 			</Col>
 			<!--属性面板-->
 			<Col span="6" class="attrBox">
-				<attrPanel :curLabelIndex="curLabelIndex"></attrPanel>
+				<attrPanel></attrPanel>
 			</Col>
 		</Row>
 	</Form>
@@ -34,17 +34,11 @@
 			attrPanel,
 			formView
 		},
-		props: [
-			'fromCreateData'
-		],
 		data() {
 			return {
-				curLabelIndex: 0, //初始化
 			}
 		},
 		created() {
-			//临时，后期统一整理到router.js逻辑里
-			this.$store.commit('setLabel',this.fromCreateData);
 		},
 		computed: {
 			//pageView和pageTool在本页面只读不改，所有的修改交给$store
@@ -142,11 +136,7 @@
 				}
 			});
 		},
-		methods: {
-			changeAttr(index){
-				this.curLabelIndex = index;
-			}
-		},
+		methods: {},
 		watch: {},
 	}
 </script>

@@ -19,37 +19,43 @@
 </template>
 
 <script>
+	import {mapState} from 'vuex';
 	export default {
 		name: "leftMenu",
 		data() {
 			return {
-				flowList: [{
-					id: 0,
-					name: "门诊工作流",
-				}, {
-					id: 1,
-					name: "住院工作流",
-				}],
 				curId: null
 			}
 		},
-		computed: {
-		},
+		computed: mapState({
+			flowList: state=>state.workFlow.flowList
+		}),
 		props: [],
-		mounted() {
-		},
+		mounted() {},
 		created() {
-			this.flowChange(this.flowList[0].id,true);
+			this.$store.dispatch('setFlow');
+		},
+		watch: {
+			flowList: {
+				handler(n,o){
+					if(n.length>0){
+						let id = n[0].id
+						this.curId = id;
+						this.$store.dispatch('setNode',id);
+					}
+				},
+				//deep: true  //数组深度监听
+			}
 		},
 		methods: {
-			//工作流加载
-			flowChange(id,r) {
+			//工作流切换,切换前保存。
+			flowChange(id) {
 				this.curId = id;
-				this.$emit('flowChange',{id,r})
+				this.$emit('flowChange',id)
 			},
 			//工作流新建
 			flowNew() {
-				let newFlowName = "";
+				let name = "";
 				this.$Modal.confirm({
 					render: (h) => {
 						return h('Input', {
@@ -59,45 +65,40 @@
 							},
 							on: {
 								input: (val) => {
-									newFlowName = val;
+									name = val;
 								}
 							}
 						})
 					},
 					onOk: () => {
 						let fl = this.flowList;
-						if(newFlowName != "") {
-							let id = fl[fl.length - 1].id || -1;
-							fl.push({
-								id: id + 1,
-								name: newFlowName,
-								cur: false,
-								flow: []
-							})
+						if(name != "") {
+							let id = fl[fl.length - 1].id+1 || 0;
+							this.$store.commit('flowNew',{id,name})
 						}
 					}
 				})
 			},
 			//工作流编辑
 			flowEdit(i) {
-				let newFlowName = this.flowList[i].name;
+				let name = this.flowList[i].name;
 				this.$Modal.confirm({
 					render: (h) => {
 						return h('Input', {
 							props: {
-								value: newFlowName,
+								value: name,
 								autofocus: true,
 								placeholder: '请输入工作流名字'
 							},
 							on: {
 								input: (val) => {
-									newFlowName = val;
+									name = val;
 								}
 							}
 						})
 					},
 					onOk: () => {
-						this.flowList[i].name = newFlowName;
+						this.$store.commit('flowEdit',{i,name});
 					}
 				})
 			},
@@ -111,19 +112,13 @@
 							return h('p', "确认是否删除")
 						},
 						onOk: () => {
-							this.flowList.splice(i, 1);
-							this.flowChange(0);
+							this.$store.commit('flowDel',i)
+							this.$nextTick(()=>{
+								this.flowChange(this.flowList[0].id);
+							})
 						}
 					})
 				}
-			}
-		},
-		watch: {
-			flowList: {
-				handler(newList){
-					this.flowChange(this.curId);
-				},
-				deep: true  //数组深度监听
 			}
 		}
 	}

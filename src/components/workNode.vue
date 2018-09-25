@@ -23,7 +23,7 @@
 			</Row>
 		</div>
 		<div class="workNodeMain">
-			<router-view @dataLink="dataLink($event)" :fromCreateData="fromCreateData"></router-view>
+			<router-view></router-view>
 		</div>
 	</div>
 </template>
@@ -32,7 +32,6 @@
 	export default {
 		data() {
 			return {
-				fromCreateData: {},
 				workNodeSteps: ['dataLink','formCreate','formLogic'],
 				curStep: 0,
 			}
@@ -46,9 +45,6 @@
 		computed:{
 		},
 		methods: {
-			dataLink(data){
-				this.fromCreateData = data;
-			}
 		},
 		watch: {
 			curStep(s) {

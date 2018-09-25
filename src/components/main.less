@@ -146,7 +146,8 @@
                     position: absolute;
                     &Main{
                         margin: 0 auto;
-                        width: 12em;
+                        min-width: 140px;
+                        padding: 0 10px;
                         background: #279eb7;
                         color: #fff;
                         text-align: center;
@@ -170,18 +171,9 @@
                             display: block;
                         }
                     }
-                    &.itemFallback{
-                        .draggable-arrow{
-                            display: none;
-                        }
-                    }
-                    &.toolChosen,
-                    &.itemChosen{
-                        opacity: .3;
+                    &.toolChosen{
+                        opacity: 0;
                     }                
-                    &:last-child .draggable-arrow{
-                        display: none;
-                    }
                 }
             }
         }
