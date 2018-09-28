@@ -9,6 +9,7 @@
 		<Col span="16" class="centerView">
 			<h3>{{flowTitle}}</h3>
 			<div id="viewBox" class="viewBox">
+				<template v-if="nodeList">
 				<div v-for="(item, index) in nodeList.nodes" :key="index" :id="item.id" class="workItem" :data-index="index" :style="'left:'+item.loca.x+'px;top:'+item.loca.y+'px;'">
 					<div class="workItemMain" @dblclick="toWorkNode(item.type)">
 						<Icon :type="item.icon"></Icon>
@@ -18,6 +19,7 @@
 					</div>
 					<div class="workItemArrow"></div>
 				</div>
+				</template>
 			</div>
 		</Col>
 		<!--右侧工具盒子-->
@@ -60,6 +62,7 @@
 		},
 		computed: {
 			nodeList() {
+				console.log(this.$store.state.workFlow.nodeList);
 				return this.$store.state.workFlow.nodeList
 			},
 			toolListTitle() {
@@ -82,8 +85,10 @@
 			nodeList: {
 				handler(n, o) {
 					this.$nextTick(() => {
-						if(n.nodes && n.nodes.length > 0) {
-							this.jspReady()
+						if(o===null) {
+							this.jspReady();
+						}else{
+							this.jspBegin();
 						}
 					})
 				},
@@ -124,14 +129,12 @@
 							
 							vm.$store.commit({
 								type: 'nodeNew',
-								tool: Object.assign({},tool),
+								tool: Object.assign({},tool),  //深拷贝，防止拖动相同
 								loca,
 								id
 							})
-
 							vm.$nextTick(() => {
 								vm.jspInitNode(id); //注册成jsp节点
-								
 								vm.nodeEdit(vm.nodeList.nodes.length-1); //编辑新节点
 							});
 						},
@@ -198,7 +201,7 @@
 							return h('p', "确认是否删除该节点")
 						},
 						onOk: () => {
-							vm.$store.commit({ //既要删除节点数据
+							vm.$store.commit({ //删除节点数据
 								type: 'nodeDel',
 								id
 							})
@@ -206,7 +209,7 @@
 							//需要重新装载
 							let newNodeList = vm.nodeList;
 							vm.$nextTick(()=>{
-								vm.$store.commit('setNode',{});
+								vm.$store.commit('setNode','empty');
 								vm.$nextTick(()=>{
 									vm.jsp.empty('viewBox');
 									vm.$store.commit('setNode',newNodeList);
@@ -249,16 +252,19 @@
 				//});
 
 				//instance.bind("connection", function(info) {});
-				
-				this.nodeList.nodes.forEach(item => {
-					this.jspInitNode(item.id);
-				});
-				this.nodeList.connections.forEach(item => {
-					this.jsp.connect({
-						source: item.sourceId,
-						target: item.targetId
+				if(this.nodeList.nodes && this.nodeList.nodes.length > 0){
+					this.nodeList.nodes.forEach(item => {
+						this.jspInitNode(item.id);
 					});
-				});
+				}
+				if(this.nodeList.connections && this.nodeList.connections.length > 0){
+					this.nodeList.connections.forEach(item => {
+						this.jsp.connect({
+							source: item.sourceId,
+							target: item.targetId
+						});
+					});
+				}
 			},
 			jspInitNode(el) {
 				let vm = this;
@@ -342,11 +348,12 @@
 				}
 			},
 			//切换时，先清空工作流
-			emptyNode(id){
-				this.$store.commit('setNode',{});
+			emptyNode(a){
+				this.$store.commit('setNode','empty');
 				this.$nextTick(()=>{
-					this.jsp.empty('viewBox');
-					this.$store.dispatch('setNode',id);
+					this.$store.commit('curFlow',a.index);
+					this.jsp && this.jsp.empty('viewBox');
+					a.id && this.$store.dispatch('getNode',a.id);
 				})
 			},
 			//编辑工作节点

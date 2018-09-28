@@ -1,25 +1,33 @@
 import axios from 'axios';
 export default {
 	state: {
-		flowList: [],
-		nodeList: {}
+		curFlow: null,
+		flowList: null,
+		nodeList: null
 	},
 	getters: {},
 	actions: {
-		setFlow({commit}){
+		getFlow({commit}){
 			axios.get('./static/workFlow/workFlowList.json')
 				.then((res)=>{
-					commit('setFlow',res.data);
+					if(res.data){
+						commit('setFlow',res.data);
+					}else{
+						commit('setFlow',[]);
+					}
 				})
 		},
-		setNode({commit},id){
-			axios.get('./static/workFlow/workNodeList_'+id+'.json')
-				.then((res)=>{
-					commit('setNode',res.data);
-				})
-				.catch(function (error) {
-					commit('setNode',{})
-				})
+		getNode({commit},id){
+			if(id){
+				axios.get('./static/workFlow/workNodeList_'+id+'.json')
+					.then((res)=>{
+						if(res.data.nodes || res.data.nodes.length>0){
+							commit('setNode',res.data);
+						}else{
+							commit('setNode','empty');
+						}
+					})
+			}
 		}
 	},
 	mutations: {
@@ -27,9 +35,13 @@ export default {
 		setFlow(s,data){
 			s.flowList = data;
 		},
+		//设置当前工作流
+		curFlow(s,index){
+			s.curFlow = index;
+		},
 		//新增工作流
 		flowNew(s,newFlow){
-			s.flowList.push(newFlow)
+			s.flowList.push(newFlow);
 		},
 		//删除工作流
 		flowDel(s,index){
@@ -41,10 +53,17 @@ export default {
 		},
 		//初始化节点
 		setNode(s, data) {
-			s.nodeList = data;
+			if(data=="empty"){
+				s.nodeList = {nodes:[],connections:[]}
+			}else{
+				s.nodeList = data;
+			}
 		},
 		//新增节点
 		nodeNew(s, op) {
+			if(!s.nodeList.nodes){
+				s.nodeList.nodes = [];
+			}
 			s.nodeList.nodes.push(Object.assign(op.tool, {
 				loca: op.loca,
 				id: op.id

@@ -7,7 +7,7 @@
 			</span>
 		</h3>
 		<ul>
-			<li v-for="(v,i) in flowList" :class="v.id==curId&&'cur'" @click.self="flowChange(v.id)">
+			<li v-for="(v,i) in flowList" :class="i==curIndex&&'cur'" @click.self="flowChange(v.id,i)">
 				{{v.name}}
 				<span class="flowBoxRight">
 					<Icon type="md-create" @click="flowEdit(i)" /> 
@@ -24,24 +24,26 @@
 		name: "leftMenu",
 		data() {
 			return {
-				curId: null
 			}
 		},
 		computed: mapState({
-			flowList: state=>state.workFlow.flowList
+			flowList: state=>state.workFlow.flowList,
+			curIndex: state=>state.workFlow.curFlow
 		}),
 		props: [],
 		mounted() {},
 		created() {
-			this.$store.dispatch('setFlow');
+			this.$store.dispatch('getFlow');
 		},
 		watch: {
 			flowList: {
 				handler(n,o){
 					if(n.length>0){
-						let id = n[0].id
-						this.curId = id;
-						this.$store.dispatch('setNode',id);
+						let i = 0;
+						if(o!==null){
+							i = n.length-1;
+						}
+						this.flowChange(n[i].id,i)
 					}
 				},
 				//deep: true  //数组深度监听
@@ -49,9 +51,8 @@
 		},
 		methods: {
 			//工作流切换,切换前保存。
-			flowChange(id) {
-				this.curId = id;
-				this.$emit('flowChange',id)
+			flowChange(id,index) {
+				this.$emit('flowChange',{id,index})
 			},
 			//工作流新建
 			flowNew() {
@@ -71,10 +72,8 @@
 						})
 					},
 					onOk: () => {
-						let fl = this.flowList;
 						if(name != "") {
-							let id = fl[fl.length - 1].id+1 || 0;
-							this.$store.commit('flowNew',{id,name})
+							this.$store.commit('flowNew',{name})
 						}
 					}
 				})
@@ -114,7 +113,7 @@
 						onOk: () => {
 							this.$store.commit('flowDel',i)
 							this.$nextTick(()=>{
-								this.flowChange(this.flowList[0].id);
+								this.flowChange(this.flowList[0].id,0);
 							})
 						}
 					})
